@@ -1,19 +1,56 @@
-from fastapi.responses import PlainTextResponse
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi.responses import PlainTextResponse, HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, File, UploadFile, Form
 from openai import OpenAI
 from pathlib import Path
 from dotenv import load_dotenv
 import base64, os, json, uuid
 from datetime import datetime
+import mimetypes  # <-- جديد
 
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
 
 load_dotenv(".env")
 
-
 app = FastAPI()
+
+# ========== Frontend Routes ==========
+@app.get("/", response_class=HTMLResponse)
+async def serve_index():
+    """خدمة صفحة index.html الرئيسية"""
+    index_path = BASE_DIR / "index.html"
+    try:
+        if index_path.exists():
+            with open(index_path, "r", encoding="utf-8") as f:
+                return HTMLResponse(content=f.read())
+        else:
+            return HTMLResponse(content=f"""
+            <html>
+                <body style="font-family: Arial; padding: 20px;">
+                    <h1>❌ index.html not found</h1>
+                    <p>File not found at: {index_path}</p>
+                    <p>Current directory contents:</p>
+                    <pre>{os.listdir(BASE_DIR)}</pre>
+                </body>
+            </html>
+            """, status_code=404)
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Error: {e}</h1>", status_code=500)
+
+@app.get("/{filename}")
+async def serve_static(filename: str):
+    """خدمة الملفات الثابتة (CSS, JS, images, etc.)"""
+    if filename.startswith(".") or filename in ["main.py", "Dockerfile", ".env"]:
+        return HTMLResponse(content="Forbidden", status_code=403)
+    
+    file_path = BASE_DIR / filename
+    if file_path.exists() and file_path.is_file():
+        mime_type, _ = mimetypes.guess_type(filename)
+        return FileResponse(file_path)
+    
+    raise HTTPException(status_code=404, detail="File not found")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
