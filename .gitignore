@@ -1,0 +1,8 @@
+.env
+__pycache__/
+conversations/
+cache/
+cache_doctor/
+cache_lawyer/
+cache_unified/
+*.pyc
