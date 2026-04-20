@@ -37,7 +37,7 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 # ══════════════════════════════════════════
 # 💾 التخزين المشفر
 # ══════════════════════════════════════════
-STORAGE_DIR       = r"C:\Users\HUAWEI\MVP\conversations"
+STORAGE_DIR       = r"conversations"
 STORAGE_PLAIN     = os.path.join(STORAGE_DIR, "plain")
 STORAGE_ENCRYPTED = os.path.join(STORAGE_DIR, "encrypted")
 os.makedirs(STORAGE_PLAIN, exist_ok=True)
