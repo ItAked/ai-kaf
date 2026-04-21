@@ -10,7 +10,8 @@ from datetime import datetime
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
 
-load_dotenv(".env")
+load_dotenv(ENV_PATH)
+# load_dotenv(".env")
 
 print("📂 BASE_DIR:", BASE_DIR)
 print("📄 ENV_PATH:", ENV_PATH)
