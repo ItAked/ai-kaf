@@ -456,7 +456,9 @@ async function switchSectionWithAnalysis(type) {
     formData.append("intent_type","auto");
 
     try {
+        console.log("here 1")
         const res  = await fetch(API_URL, { method: "POST", body: formData });
+        console.log("here 2")
         const text = await res.text();
         removeTyping();
         appendMessage(formatText(text), "ai");
