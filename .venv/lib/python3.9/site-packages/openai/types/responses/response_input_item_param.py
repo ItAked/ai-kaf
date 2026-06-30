@@ -6,6 +6,7 @@ from typing import Dict, Union, Iterable, Optional
 from typing_extensions import Literal, Required, TypeAlias, TypedDict
 
 from ..._types import SequenceNotStr
+from .tool_param import ToolParam
 from .local_environment_param import LocalEnvironmentParam
 from .easy_input_message_param import EasyInputMessageParam
 from .container_reference_param import ContainerReferenceParam
@@ -32,6 +33,7 @@ __all__ = [
     "ComputerCallOutputAcknowledgedSafetyCheck",
     "FunctionCallOutput",
     "ToolSearchCall",
+    "AdditionalTools",
     "ImageGenerationCall",
     "LocalShellCall",
     "LocalShellCallAction",
@@ -51,6 +53,7 @@ __all__ = [
     "McpApprovalRequest",
     "McpApprovalResponse",
     "McpCall",
+    "CompactionTrigger",
     "ItemReference",
 ]
 
@@ -168,6 +171,20 @@ class ToolSearchCall(TypedDict, total=False):
 
     status: Optional[Literal["in_progress", "completed", "incomplete"]]
     """The status of the tool search call."""
+
+
+class AdditionalTools(TypedDict, total=False):
+    role: Required[Literal["developer"]]
+    """The role that provided the additional tools. Only `developer` is supported."""
+
+    tools: Required[Iterable[ToolParam]]
+    """A list of additional tools made available at this item."""
+
+    type: Required[Literal["additional_tools"]]
+    """The item type. Always `additional_tools`."""
+
+    id: Optional[str]
+    """The unique ID of this additional tools item."""
 
 
 class ImageGenerationCall(TypedDict, total=False):
@@ -525,6 +542,13 @@ class McpCall(TypedDict, total=False):
     """
 
 
+class CompactionTrigger(TypedDict, total=False):
+    """Compacts the current context. Must be the final input item."""
+
+    type: Required[Literal["compaction_trigger"]]
+    """The type of the item. Always `compaction_trigger`."""
+
+
 class ItemReference(TypedDict, total=False):
     """An internal identifier for an item to reference."""
 
@@ -547,6 +571,7 @@ ResponseInputItemParam: TypeAlias = Union[
     FunctionCallOutput,
     ToolSearchCall,
     ResponseToolSearchOutputItemParamParam,
+    AdditionalTools,
     ResponseReasoningItemParam,
     ResponseCompactionItemParamParam,
     ImageGenerationCall,
@@ -563,5 +588,6 @@ ResponseInputItemParam: TypeAlias = Union[
     McpCall,
     ResponseCustomToolCallOutputParam,
     ResponseCustomToolCallParam,
+    CompactionTrigger,
     ItemReference,
 ]

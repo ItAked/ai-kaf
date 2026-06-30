@@ -10,8 +10,9 @@ from datetime import datetime
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
 
-load_dotenv(ENV_PATH)
-# load_dotenv(".env")
+#load_dotenv("C:/Users/HUAWEI/MVP/.env")
+
+load_dotenv(override=True)
 
 print("📂 BASE_DIR:", BASE_DIR)
 print("📄 ENV_PATH:", ENV_PATH)
@@ -532,3 +533,7 @@ async def analyze(
         print(f"⚠️ خطأ في الحفظ: {e}")
 
     return PlainTextResponse(final_answer)
+
+
+
+
