@@ -121,9 +121,27 @@ def is_emergency(text: str) -> bool:
 
 def is_greeting(text: str) -> bool:
     greetings = ["السلام", "هلا", "مرحبا", "مرحباً", "اهلا", "أهلاً",
-                 "hello", "hi", "مساء", "صباح", "كيف حالك"]
+                 "hello", "hi", "hey", "مساء", "صباح", "كيف حالك"]
     lowered = text.lower()
     return any(x in lowered for x in greetings) and len(text.split()) <= 6
+
+def greeting_reply(text: str) -> str:
+    """Return a greeting opener that matches how the user greeted."""
+    lowered = text.lower().strip()
+
+    if "السلام" in lowered or "سلام عليكم" in lowered:
+        return "وعليكم السلام 👋"
+    if "صباح" in lowered or "good morning" in lowered:
+        return "صباح الخير 👋"
+    if "مساء" in lowered or "good evening" in lowered:
+        return "مساء الخير 👋"
+    if any(x in lowered for x in ("hello", "hi", "hey")):
+        return "Hello 👋"
+    if any(x in lowered for x in ("مرحبا", "مرحباً", "اهلا", "أهلا", "أهلاً", "هلا")):
+        return "مرحباً 👋"
+    if "كيف حالك" in lowered:
+        return "بخير، شكراً لك 👋"
+    return "مرحباً 👋"
 
 EMERGENCY_MSG  = (
     "⚠️ تحذير عاجل — حالة طارئة\n\n"
@@ -430,10 +448,11 @@ async def analyze(
         return PlainTextResponse(FALLBACK_EMPTY)
 
     if is_greeting(question):
+        opener = greeting_reply(question)
         greet = {
-            "patient": "وعليكم السلام 👋\n\nأنا كاف — مستشارك الطبي والقانوني.\nأخبرني بحالتك مباشرة وسأحللها. 🎯",
-            "doctor": "وعليكم السلام 👋\n\nأنا كاف — مستشارك الطبي القانوني للممارسين الصحيين.\nاعرض حالتك السريرية وسأحللها. 🩺",
-            "lawyer": "وعليكم السلام 👋\n\nأنا كاف — مستشارك في القضايا الطبية القانونية.\nاعرض قضيتك وسأحللها. ⚖️",
+            "patient": f"{opener}\n\nأنا كاف — مستشارك الطبي والقانوني.\nأخبرني بحالتك مباشرة وسأحللها. 🎯",
+            "doctor": f"{opener}\n\nأنا كاف — مستشارك الطبي القانوني للممارسين الصحيين.\nاعرض حالتك السريرية وسأحللها. 🩺",
+            "lawyer": f"{opener}\n\nأنا كاف — مستشارك في القضايا الطبية القانونية.\nاعرض قضيتك وسأحللها. ⚖️",
         }
         return PlainTextResponse(greet.get(user_type, greet["patient"]))
 
